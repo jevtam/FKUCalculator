@@ -1,6 +1,11 @@
 import React from "react";
-import { CatalogScreen } from "../screens";
+import AppShell from "./AppShell";
+import { WebAppContainer } from "../shared/ui/WebAppContainer";
 
 export default function App() {
-  return <CatalogScreen />;
+  return (
+    <WebAppContainer>
+      <AppShell />
+    </WebAppContainer>
+  );
 }
