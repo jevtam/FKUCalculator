@@ -5,7 +5,7 @@ import { Screen } from "../../shared/ui/Screen";
 export function CatalogScreen() {
   return (
     <Screen>
-      <Text>Catalog: Продукты / Блюда</Text>
+      <Text>Каталог: Продукты</Text>
     </Screen>
   );
 }

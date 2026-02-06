@@ -5,7 +5,7 @@ import { Screen } from "../../shared/ui/Screen";
 export function OptionsScreen() {
   return (
     <Screen>
-      <Text>Options</Text>
+      <Text>Найстроки + экспорт данных (в будущем)</Text>
     </Screen>
   );
 }

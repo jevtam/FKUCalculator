@@ -1,6 +1,7 @@
 import React from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View, Image } from "react-native";
 import { colors, spacing, typography } from "../../theme";
+import { navIcons } from "../../icons/navIcons";
 import type { RouteKey } from "../../../app/AppShell";
 
 type Props = {
@@ -8,10 +9,26 @@ type Props = {
   onChange: (next: RouteKey) => void;
 };
 
-const items: Array<{ key: RouteKey; label: string; icon: string }> = [
-  { key: "catalog", label: "Каталог", icon: "✎" },
-  { key: "diary", label: "Дневник", icon: "🧾" },
-  { key: "options", label: "Опции", icon: "⚙" },
+const items: Array<{
+  key: RouteKey;
+  label: string;
+  icon: any;
+}> = [
+  {
+    key: "catalog",
+    label: "Каталог",
+    icon: navIcons.catalog,
+  },
+  {
+    key: "diary",
+    label: "Дневник",
+    icon: navIcons.diary,
+  },
+  {
+    key: "options",
+    label: "Опции",
+    icon: navIcons.options,
+  },
 ];
 
 export function BottomNav({ active, onChange }: Props) {
@@ -25,12 +42,11 @@ export function BottomNav({ active, onChange }: Props) {
             onPress={() => onChange(it.key)}
             style={styles.item}
           >
-            <Text style={[styles.icon, isActive && styles.iconActive]}>
-              {it.icon}
-            </Text>
-            <Text style={[styles.label, isActive && styles.labelActive]}>
-              {it.label}
-            </Text>
+            <Image
+              source={it.icon}
+              style={[styles.icon, isActive && styles.iconActive]}
+              resizeMode="contain"
+            />
             {isActive ? (
               <View style={styles.underline} />
             ) : (
@@ -58,13 +74,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 6,
   },
-  icon: {
-    fontSize: 22,
-    color: colors.muted,
-  },
-  iconActive: {
-    color: colors.text,
-  },
   label: {
     fontSize: typography.small,
     color: colors.muted,
@@ -84,5 +93,13 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
     backgroundColor: "transparent",
     marginTop: 4,
+  },
+  icon: {
+    width: 22,
+    height: 22,
+    tintColor: colors.muted,
+  },
+  iconActive: {
+    tintColor: colors.text,
   },
 });

@@ -5,7 +5,7 @@ import { Screen } from "../../shared/ui/Screen";
 export function DiaryScreen() {
   return (
     <Screen>
-      <Text>Diary: Дневник</Text>
+      <Text>Дневник учета </Text>
     </Screen>
   );
 }
