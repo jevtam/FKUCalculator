@@ -7,6 +7,7 @@ import { useProducts } from "../../features/products/model/useProducts";
 import { ProductsList } from "../../features/products/ui/ProductsList";
 import { ProductFormModal } from "../../features/products/ui/ProductFormModal";
 import type { Product } from "../../features/products/model/types";
+import { confirmDialog } from "../../shared/lib/confirm";
 
 type Tab = "products" | "dishes";
 
@@ -93,24 +94,18 @@ export function CatalogScreen() {
             setModalOpen(false);
             setEditItem(null);
           } catch (e: any) {
-            Alert.alert("Ошибка", e?.message ?? "Проверьте поля");
+            alert(e?.message ?? "Проверьте поля");
           }
         }}
-        onDelete={() => {
+        onDelete={async () => {
           if (!editItem) return;
 
-          Alert.alert("Удалить продукт?", editItem.name, [
-            { text: "Отмена", style: "cancel" },
-            {
-              text: "Удалить",
-              style: "destructive",
-              onPress: () => {
-                remove(editItem.id);
-                setModalOpen(false);
-                setEditItem(null);
-              },
-            },
-          ]);
+          const ok = await confirmDialog("Удалить продукт?", editItem.name);
+          if (!ok) return;
+
+          remove(editItem.id);
+          setModalOpen(false);
+          setEditItem(null);
         }}
       />
     </Screen>
