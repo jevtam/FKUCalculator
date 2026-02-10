@@ -63,16 +63,16 @@ export function ProductFormModal({
         <Text style={styles.label}>Название</Text>
         <TextInput
           value={draft.name}
+          placeholder="Например: Яблоко"
           onChangeText={(v) => setDraft((d) => ({ ...d, name: v }))}
-          placeholder="Например: Гречка"
           style={styles.input}
         />
 
         <Text style={styles.label}>Белок на 100г (г)</Text>
         <TextInput
           value={draft.proteinPer100g}
+          placeholder="Например: 0.3"
           onChangeText={(v) => setDraft((d) => ({ ...d, proteinPer100g: v }))}
-          placeholder="Например: 12.3"
           keyboardType="decimal-pad"
           style={styles.input}
         />
@@ -80,8 +80,8 @@ export function ProductFormModal({
         <Text style={styles.label}>ФА на 100г (мг)</Text>
         <TextInput
           value={draft.faPer100g}
+          placeholder="Например: 9"
           onChangeText={(v) => setDraft((d) => ({ ...d, faPer100g: v }))}
-          placeholder="Например: 450"
           keyboardType="decimal-pad"
           style={styles.input}
         />
