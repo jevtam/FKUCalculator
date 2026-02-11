@@ -1,18 +1,17 @@
 import { useEffect, useState } from "react";
-import type { DiaryItem, DiaryState, MealKey } from "./types";
+import type { DiaryItem, DiaryState, Meal, MealId } from "./types";
 import { loadDiary, saveDiary } from "../api/storage";
 
-function makeId() {
-  return `${Date.now()}_${Math.random().toString(16).slice(2)}`;
+function makeId(prefix: string) {
+  return `${prefix}_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+}
+
+function normalizeTitle(s: string) {
+  return s.trim().replace(/\s+/g, " ");
 }
 
 export function useDiary() {
-  const [state, setState] = useState<DiaryState>({
-    breakfast: [],
-    lunch: [],
-    dinner: [],
-  });
-
+  const [state, setState] = useState<DiaryState>({ meals: [] });
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
@@ -28,14 +27,40 @@ export function useDiary() {
     saveDiary(state);
   }, [state, isReady]);
 
-  const addItem = (meal: MealKey, productId: string, grams: number) => {
+  //meals CRUD
+  const addMeal = (titleRaw: string) => {
+    const title = normalizeTitle(titleRaw);
+    if (!title) throw new Error("Введите название приёма пищи");
+
+    const meal: Meal = { id: makeId("meal"), title, items: [] };
+    setState((prev) => ({ meals: [...prev.meals, meal] }));
+  };
+
+  //переименование
+  const renameMeal = (mealId: MealId, titleRaw: string) => {
+    const title = normalizeTitle(titleRaw);
+    if (!title) throw new Error("Введите название приёма пищи");
+    setState((prev) => ({
+      meals: prev.meals.map((m) => (m.id === mealId ? { ...m, title } : m)),
+    }));
+  };
+
+  //удаление приёма
+  const removeMeal = (mealId: MealId) => {
+    setState((prev) => ({
+      meals: prev.meals.filter((m) => m.id !== mealId),
+    }));
+  };
+
+  //items CRUD
+  const addItem = (mealId: MealId, productId: string, grams: number) => {
     if (!productId) throw new Error("Выберите продукт");
     if (!Number.isFinite(grams) || grams <= 0)
       throw new Error("Граммы должны быть числом > 0");
 
     const now = Date.now();
     const item: DiaryItem = {
-      id: makeId(),
+      id: makeId("item"),
       productId,
       grams,
       createdAt: now,
@@ -43,14 +68,15 @@ export function useDiary() {
     };
 
     setState((prev) => ({
-      ...prev,
-      [meal]: [item, ...prev[meal]],
+      meals: prev.meals.map((m) =>
+        m.id === mealId ? { ...m, items: [item, ...m.items] } : m,
+      ),
     }));
   };
 
   const updateItem = (
-    meal: MealKey,
-    id: string,
+    mealId: MealId,
+    itemId: string,
     productId: string,
     grams: number,
   ) => {
@@ -61,19 +87,41 @@ export function useDiary() {
     const now = Date.now();
 
     setState((prev) => ({
-      ...prev,
-      [meal]: prev[meal].map((it) =>
-        it.id === id ? { ...it, productId, grams, updatedAt: now } : it,
+      meals: prev.meals.map((m) =>
+        m.id === mealId
+          ? {
+              ...m,
+              items: m.items.map((it) =>
+                it.id === itemId
+                  ? { ...it, productId, grams, updatedAt: now }
+                  : it,
+              ),
+            }
+          : m,
       ),
     }));
   };
 
-  const removeItem = (meal: MealKey, id: string) => {
+  const removeItem = (mealId: MealId, itemId: string) => {
     setState((prev) => ({
-      ...prev,
-      [meal]: prev[meal].filter((it) => it.id !== id),
+      meals: prev.meals.map((m) =>
+        m.id === mealId
+          ? { ...m, items: m.items.filter((it) => it.id !== itemId) }
+          : m,
+      ),
     }));
   };
 
-  return { isReady, state, addItem, updateItem, removeItem };
+  return {
+    isReady,
+    meals: state.meals,
+
+    addMeal,
+    renameMeal,
+    removeMeal,
+
+    addItem,
+    updateItem,
+    removeItem,
+  };
 }

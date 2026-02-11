@@ -27,7 +27,7 @@ export function CatalogScreen() {
   );
 
   return (
-    <Screen style={{ paddingBottom: spacing.md }}>
+    <Screen scroll style={{ paddingBottom: spacing.md }}>
       <View style={styles.topRow}>
         <View style={styles.tabs}>
           <Pressable onPress={() => setTab("products")} style={styles.tabBtn}>

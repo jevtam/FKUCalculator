@@ -1,22 +1,26 @@
 import React, { useMemo, useState } from "react";
-import { Alert, View } from "react-native";
+import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 import { Screen } from "../../shared/ui/Screen";
-import { spacing } from "../../shared/theme";
+import { colors, spacing, typography } from "../../shared/theme";
 import { confirmDialog } from "../../shared/lib/confirm";
 
 import { useProducts } from "../../features/products/model/useProducts";
 import { useDiary } from "../../features/diary/model/useDiary";
-import type { MealKey } from "../../features/diary/model/types";
-import type { DiaryItem } from "../../features/diary/model/types";
+import type { DiaryItem, MealId } from "../../features/diary/model/types";
 
 import { MealCard } from "../../features/diary/ui/MealCard";
 import { DiaryItemModal } from "../../features/diary/ui/DiaryItemModal";
+import { AddMealModal } from "../../features/diary/ui/AddMealModal";
+import { EditMealModal } from "../../features/diary/ui/EditMealModal";
 
 export function DiaryScreen() {
   const { isReady: productsReady, items: products, byId } = useProducts();
   const {
     isReady: diaryReady,
-    state,
+    meals,
+    addMeal,
+    renameMeal,
+    removeMeal,
     addItem,
     updateItem,
     removeItem,
@@ -24,92 +28,186 @@ export function DiaryScreen() {
 
   const ready = productsReady && diaryReady;
 
-  const [modalOpen, setModalOpen] = useState(false);
-  const [meal, setMeal] = useState<MealKey>("breakfast");
+  //модалка добавления/редактирования позиции
+  const [itemModalOpen, setItemModalOpen] = useState(false);
+  const [mealId, setMealId] = useState<MealId>("breakfast");
   const [editItem, setEditItem] = useState<DiaryItem | null>(null);
 
-  const modalMode = editItem ? "edit" : "create";
+  //модалка добавления приема пищи
+  const [mealModalOpen, setMealModalOpen] = useState(false);
 
-  const openCreate = (m: MealKey) => {
-    setMeal(m);
+  //модалка редактирования приема пищи
+  const [editMealOpen, setEditMealOpen] = useState(false);
+  const [editMealId, setEditMealId] = useState<MealId | null>(null);
+
+  const itemModalMode = editItem ? "edit" : "create";
+
+  const mealToEdit = useMemo(() => {
+    return meals.find((m) => m.id === editMealId) ?? null;
+  }, [meals, editMealId]);
+
+  const openCreateItem = (mId: MealId) => {
+    setMealId(mId);
     setEditItem(null);
-    setModalOpen(true);
+    setItemModalOpen(true);
   };
 
-  const openEdit = (m: MealKey, item: DiaryItem) => {
-    setMeal(m);
+  const openEditItem = (mId: MealId, item: DiaryItem) => {
+    setMealId(mId);
     setEditItem(item);
-    setModalOpen(true);
+    setItemModalOpen(true);
+  };
+
+  const openEditMeal = (mId: MealId) => {
+    setEditMealId(mId);
+    setEditMealOpen(true);
   };
 
   const sortedProducts = useMemo(() => {
-    //продукты уже отсортированы в useProducts, но пусть будет гарантированно
     return [...products].sort((a, b) => a.name.localeCompare(b.name, "ru"));
   }, [products]);
 
   return (
-    <Screen>
-      <View style={{ flex: 1, gap: spacing.lg }}>
-        <MealCard
-          title="Завтрак"
-          meal="breakfast"
-          items={state.breakfast}
-          productsById={byId}
-          onAdd={() => openCreate("breakfast")}
-          onEdit={(it) => openEdit("breakfast", it)}
-        />
+    <Screen scroll>
+      <View style={styles.topRow}>
+        <Text style={styles.title}>Дневник</Text>
 
-        <MealCard
-          title="Обед"
-          meal="lunch"
-          items={state.lunch}
-          productsById={byId}
-          onAdd={() => openCreate("lunch")}
-          onEdit={(it) => openEdit("lunch", it)}
-        />
-
-        <MealCard
-          title="Ужин"
-          meal="dinner"
-          items={state.dinner}
-          productsById={byId}
-          onAdd={() => openCreate("dinner")}
-          onEdit={(it) => openEdit("dinner", it)}
-        />
+        <Pressable
+          onPress={() => setMealModalOpen(true)}
+          style={styles.addMealBtn}
+        >
+          <Text style={styles.addMealBtnText}>+ Прием пищи</Text>
+        </Pressable>
       </View>
 
+      <View style={{ flex: 1, gap: spacing.lg }}>
+        {meals.map((m) => (
+          <MealCard
+            key={m.id}
+            title={m.title}
+            items={m.items}
+            productsById={byId}
+            onAdd={() => openCreateItem(m.id)}
+            onEdit={(it) => openEditItem(m.id, it)}
+            canEditMeal={!m.isDefault} //дефолтные защищены от удаления
+            onEditMeal={() => openEditMeal(m.id)}
+          />
+        ))}
+      </View>
+
+      {/*позиция внутри приема пищи*/}
       <DiaryItemModal
-        visible={modalOpen}
-        mode={modalMode}
+        visible={itemModalOpen}
+        mode={itemModalMode}
         products={sortedProducts}
         initialProductId={editItem?.productId ?? null}
         initialGrams={editItem?.grams ?? null}
-        onClose={() => setModalOpen(false)}
+        onClose={() => {
+          setItemModalOpen(false);
+          setEditItem(null);
+        }}
         onSubmit={(productId, grams) => {
           try {
-            if (editItem) updateItem(meal, editItem.id, productId, grams);
-            else addItem(meal, productId, grams);
+            if (editItem) updateItem(mealId, editItem.id, productId, grams);
+            else addItem(mealId, productId, grams);
 
-            setModalOpen(false);
+            setItemModalOpen(false);
             setEditItem(null);
           } catch (e: any) {
-            // В web Alert не всегда удобен — можно заменить на свою нотификацию позже
             Alert.alert("Ошибка", e?.message ?? "Проверьте поля");
           }
         }}
         onDelete={async () => {
           if (!editItem) return;
+
           const ok = await confirmDialog(
             "Удалить позицию?",
-            "Она исчезнет из приёма пищи.",
+            "Она исчезнет из приема пищи.",
           );
           if (!ok) return;
 
-          removeItem(meal, editItem.id);
-          setModalOpen(false);
+          removeItem(mealId, editItem.id);
+          setItemModalOpen(false);
           setEditItem(null);
+        }}
+      />
+
+      {/*добавить прием пищи*/}
+      <AddMealModal
+        visible={mealModalOpen}
+        onClose={() => setMealModalOpen(false)}
+        onSubmit={(title) => {
+          try {
+            addMeal(title);
+            setMealModalOpen(false);
+          } catch (e: any) {
+            Alert.alert("Ошибка", e?.message ?? "Проверьте название");
+          }
+        }}
+      />
+
+      {/*переименование/удаление приема пищи*/}
+      <EditMealModal
+        visible={editMealOpen}
+        titleInitial={mealToEdit?.title ?? ""}
+        canDelete={!!mealToEdit && !mealToEdit.isDefault}
+        onClose={() => {
+          setEditMealOpen(false);
+          setEditMealId(null);
+        }}
+        onSave={(title) => {
+          try {
+            if (!mealToEdit) return;
+            //переименовываются только пользовательские
+            if (mealToEdit.isDefault) return;
+
+            renameMeal(mealToEdit.id, title);
+            setEditMealOpen(false);
+            setEditMealId(null);
+          } catch (e: any) {
+            Alert.alert("Ошибка", e?.message ?? "Проверьте название");
+          }
+        }}
+        onDelete={async () => {
+          if (!mealToEdit) return;
+          if (mealToEdit.isDefault) return;
+
+          const ok = await confirmDialog(
+            "Удалить прием пищи?",
+            "Все позиции внутри тоже будут удалены.",
+          );
+          if (!ok) return;
+
+          removeMeal(mealToEdit.id);
+          setEditMealOpen(false);
+          setEditMealId(null);
         }}
       />
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  topRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: spacing.lg,
+  },
+  title: {
+    fontSize: typography.h2,
+    fontWeight: "800",
+    color: colors.text,
+  },
+  addMealBtn: {
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 10,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 10,
+  },
+  addMealBtnText: {
+    color: colors.text,
+    fontWeight: "800",
+  },
+});

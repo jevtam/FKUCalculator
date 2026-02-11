@@ -1,14 +1,21 @@
-export type MealKey = "breakfast" | "lunch" | "dinner";
-
+export type MealId = string;
 export type DiaryItemId = string;
 
 export type DiaryItem = {
   id: DiaryItemId;
-  productId: string; //пока только продукты
+  productId: string;
   grams: number;
-
   createdAt: number;
   updatedAt: number;
 };
 
-export type DiaryState = Record<MealKey, DiaryItem[]>;
+export type Meal = {
+  id: MealId;
+  title: string; //завтрак, обед, полдник...
+  isDefault?: boolean; //для дефолтных (завтрак, обед, ужин)
+  items: DiaryItem[];
+};
+
+export type DiaryState = {
+  meals: Meal[];
+};
