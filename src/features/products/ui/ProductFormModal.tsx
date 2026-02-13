@@ -1,14 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
-import {
-  Modal,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { colors, spacing, typography } from "../../../shared/theme";
 import type { Product, ProductDraft } from "../model/types";
+import { BottomSheetModal } from "../../../shared/ui/BottomSheetModal";
 
 type Props = {
   visible: boolean;
@@ -49,84 +43,66 @@ export function ProductFormModal({
   }, [visible, initialDraft]);
 
   return (
-    <Modal
+    <BottomSheetModal
       visible={visible}
-      transparent
-      animationType="slide"
-      onRequestClose={onClose}
+      onClose={onClose}
+      sheetStyle={styles.sheet}
     >
-      <Pressable style={styles.backdrop} onPress={onClose} />
+      <Text style={styles.title}>{title}</Text>
 
-      <View style={styles.sheet}>
-        <Text style={styles.title}>{title}</Text>
+      <Text style={styles.label}>Название</Text>
+      <TextInput
+        value={draft.name}
+        placeholder="Например: Яблоко"
+        onChangeText={(v) => setDraft((d) => ({ ...d, name: v }))}
+        style={styles.input}
+      />
 
-        <Text style={styles.label}>Название</Text>
-        <TextInput
-          value={draft.name}
-          placeholder="Например: Яблоко"
-          onChangeText={(v) => setDraft((d) => ({ ...d, name: v }))}
-          style={styles.input}
-        />
+      <Text style={styles.label}>Белок на 100г (г)</Text>
+      <TextInput
+        value={draft.proteinPer100g}
+        placeholder="Например: 0.3"
+        onChangeText={(v) => setDraft((d) => ({ ...d, proteinPer100g: v }))}
+        keyboardType="decimal-pad"
+        style={styles.input}
+      />
 
-        <Text style={styles.label}>Белок на 100г (г)</Text>
-        <TextInput
-          value={draft.proteinPer100g}
-          placeholder="Например: 0.3"
-          onChangeText={(v) => setDraft((d) => ({ ...d, proteinPer100g: v }))}
-          keyboardType="decimal-pad"
-          style={styles.input}
-        />
+      <Text style={styles.label}>ФА на 100г (мг)</Text>
+      <TextInput
+        value={draft.faPer100g}
+        placeholder="Например: 9"
+        onChangeText={(v) => setDraft((d) => ({ ...d, faPer100g: v }))}
+        keyboardType="decimal-pad"
+        style={styles.input}
+      />
 
-        <Text style={styles.label}>ФА на 100г (мг)</Text>
-        <TextInput
-          value={draft.faPer100g}
-          placeholder="Например: 9"
-          onChangeText={(v) => setDraft((d) => ({ ...d, faPer100g: v }))}
-          keyboardType="decimal-pad"
-          style={styles.input}
-        />
+      <View style={styles.actions}>
+        <Pressable onPress={onClose} style={[styles.btn, styles.btnGhost]}>
+          <Text style={styles.btnGhostText}>Отмена</Text>
+        </Pressable>
 
-        <View style={styles.actions}>
-          <Pressable onPress={onClose} style={[styles.btn, styles.btnGhost]}>
-            <Text style={styles.btnGhostText}>Отмена</Text>
+        {mode === "edit" && (
+          <Pressable onPress={onDelete} style={[styles.btn, styles.btnDanger]}>
+            <Text style={styles.btnDangerText}>Удалить</Text>
           </Pressable>
+        )}
 
-          <Pressable
-            onPress={() => onSubmit(draft)}
-            style={[styles.btn, styles.btnPrimary]}
-          >
-            <Text style={styles.btnPrimaryText}>Сохранить</Text>
-          </Pressable>
-
-          {mode === "edit" && (
-            <Pressable
-              onPress={onDelete}
-              style={[styles.btn, styles.btnDanger]}
-            >
-              <Text style={styles.btnDangerText}>Удалить</Text>
-            </Pressable>
-          )}
-        </View>
+        <Pressable
+          onPress={() => onSubmit(draft)}
+          style={[styles.btn, styles.btnPrimary]}
+        >
+          <Text style={styles.btnPrimaryText}>Сохранить</Text>
+        </Pressable>
       </View>
-    </Modal>
+    </BottomSheetModal>
   );
 }
 
 const styles = StyleSheet.create({
-  backdrop: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0,0,0,0.25)",
-  },
-
   sheet: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 0,
     backgroundColor: colors.bg,
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
-    padding: spacing.lg,
     gap: spacing.sm,
   },
 
@@ -148,8 +124,19 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
 
-  actions: { flexDirection: "row", gap: spacing.sm, marginTop: spacing.md },
-  btn: { flex: 1, paddingVertical: 12, borderRadius: 10, alignItems: "center" },
+  actions: {
+    flexDirection: "row",
+    gap: spacing.sm,
+    marginTop: spacing.md,
+    flexWrap: "wrap",
+  },
+  btn: {
+    flexGrow: 1,
+    paddingVertical: 12,
+    borderRadius: 10,
+    alignItems: "center",
+    minWidth: 120,
+  },
 
   btnGhost: {
     borderWidth: 1,
@@ -160,6 +147,7 @@ const styles = StyleSheet.create({
 
   btnPrimary: { backgroundColor: colors.text },
   btnPrimaryText: { color: "#fff", fontWeight: "700" },
+
   btnDanger: {
     borderWidth: 1,
     borderColor: "#B00020",

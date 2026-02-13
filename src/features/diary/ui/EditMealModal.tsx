@@ -8,6 +8,7 @@ import {
   View,
 } from "react-native";
 import { colors, spacing, typography } from "../../../shared/theme";
+import { BottomSheetModal } from "../../../shared/ui/BottomSheetModal";
 
 type Props = {
   visible: boolean;
@@ -34,47 +35,43 @@ export function EditMealModal({
   }, [visible, titleInitial]);
 
   return (
-    <Modal
+    <BottomSheetModal
       visible={visible}
-      transparent
-      animationType="slide"
-      onRequestClose={onClose}
+      onClose={onClose}
+      sheetStyle={styles.sheet}
     >
-      <Pressable style={styles.backdrop} onPress={onClose} />
-      <View style={styles.sheet}>
-        <Text style={styles.title}>Редактировать приём пищи</Text>
+      <Text style={styles.title}>Редактировать приём пищи</Text>
 
-        <Text style={styles.label}>Название</Text>
-        <TextInput
-          value={title}
-          onChangeText={setTitle}
-          placeholder="Например: Полдник"
-          style={styles.input}
-        />
+      <Text style={styles.label}>Название</Text>
+      <TextInput
+        value={title}
+        onChangeText={setTitle}
+        placeholder="Например: Полдник"
+        style={styles.input}
+      />
 
-        <View style={styles.actions}>
-          <Pressable onPress={onClose} style={[styles.btn, styles.btnGhost]}>
-            <Text style={styles.btnGhostText}>Отмена</Text>
-          </Pressable>
+      <View style={styles.actions}>
+        <Pressable onPress={onClose} style={[styles.btn, styles.btnGhost]}>
+          <Text style={styles.btnGhostText}>Отмена</Text>
+        </Pressable>
 
-          {canDelete && (
-            <Pressable
-              onPress={() => onDelete?.()}
-              style={[styles.btn, styles.btnDanger]}
-            >
-              <Text style={styles.btnDangerText}>Удалить</Text>
-            </Pressable>
-          )}
-
+        {canDelete && (
           <Pressable
-            onPress={() => onSave(title)}
-            style={[styles.btn, styles.btnPrimary]}
+            onPress={() => onDelete?.()}
+            style={[styles.btn, styles.btnDanger]}
           >
-            <Text style={styles.btnPrimaryText}>Сохранить</Text>
+            <Text style={styles.btnDangerText}>Удалить</Text>
           </Pressable>
-        </View>
+        )}
+
+        <Pressable
+          onPress={() => onSave(title)}
+          style={[styles.btn, styles.btnPrimary]}
+        >
+          <Text style={styles.btnPrimaryText}>Сохранить</Text>
+        </Pressable>
       </View>
-    </Modal>
+    </BottomSheetModal>
   );
 }
 
@@ -84,14 +81,9 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.25)",
   },
   sheet: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 0,
     backgroundColor: colors.bg,
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
-    padding: spacing.lg,
     gap: spacing.sm,
   },
   title: { fontSize: typography.h2, fontWeight: "700", color: colors.text },
