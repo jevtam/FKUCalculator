@@ -8,7 +8,7 @@ import {
   View,
 } from "react-native";
 import { colors, spacing, typography } from "../../../shared/theme";
-import { BottomSheetModal } from "../../../shared/ui/BottomSheetModal";
+import { FullScreenModal } from "../../../shared/ui/FullScreenModal";
 
 type Props = {
   visible: boolean;
@@ -35,10 +35,9 @@ export function EditMealModal({
   }, [visible, titleInitial]);
 
   return (
-    <BottomSheetModal
+    <FullScreenModal
       visible={visible}
       onClose={onClose}
-      sheetStyle={styles.sheet}
     >
       <Text style={styles.title}>Редактировать приём пищи</Text>
 
@@ -71,15 +70,11 @@ export function EditMealModal({
           <Text style={styles.btnPrimaryText}>Сохранить</Text>
         </Pressable>
       </View>
-    </BottomSheetModal>
+    </FullScreenModal>
   );
 }
 
 const styles = StyleSheet.create({
-  backdrop: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0,0,0,0.25)",
-  },
   sheet: {
     backgroundColor: colors.bg,
     borderTopLeftRadius: 16,

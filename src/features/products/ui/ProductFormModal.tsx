@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { colors, spacing, typography } from "../../../shared/theme";
 import type { Product, ProductDraft } from "../model/types";
-import { BottomSheetModal } from "../../../shared/ui/BottomSheetModal";
+import { FullScreenModal } from "../../../shared/ui/FullScreenModal";
 
 type Props = {
   visible: boolean;
@@ -43,10 +43,9 @@ export function ProductFormModal({
   }, [visible, initialDraft]);
 
   return (
-    <BottomSheetModal
+    <FullScreenModal
       visible={visible}
       onClose={onClose}
-      sheetStyle={styles.sheet}
     >
       <Text style={styles.title}>{title}</Text>
 
@@ -94,7 +93,7 @@ export function ProductFormModal({
           <Text style={styles.btnPrimaryText}>Сохранить</Text>
         </Pressable>
       </View>
-    </BottomSheetModal>
+    </FullScreenModal>
   );
 }
 

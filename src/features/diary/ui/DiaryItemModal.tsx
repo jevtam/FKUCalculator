@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { colors, spacing, typography } from "../../../shared/theme";
 import type { Product } from "../../products/model/types";
-import { BottomSheetModal } from "../../../shared/ui/BottomSheetModal";
+import { FullScreenModal } from "../../../shared/ui/FullScreenModal";
 
 type Mode = "create" | "edit";
 
@@ -54,10 +54,9 @@ export function DiaryItemModal({
   );
 
   return (
-    <BottomSheetModal
+    <FullScreenModal
       visible={visible}
       onClose={onClose}
-      sheetStyle={styles.sheet}
       scroll={false}
     >
       <Text style={styles.title}>{title}</Text>
@@ -125,15 +124,11 @@ export function DiaryItemModal({
           <Text style={styles.btnPrimaryText}>Сохранить</Text>
         </Pressable>
       </View>
-    </BottomSheetModal>
+    </FullScreenModal>
   );
 }
 
 const styles = StyleSheet.create({
-  backdrop: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0,0,0,0.25)",
-  },
   sheet: {
     backgroundColor: colors.bg,
     borderTopLeftRadius: 16,
