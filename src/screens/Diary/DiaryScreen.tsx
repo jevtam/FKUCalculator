@@ -1,5 +1,12 @@
 import React, { useMemo, useState } from "react";
-import { Alert, ScrollView, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  Alert,
+  ScrollView,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { Calendar } from "react-native-calendars";
 
 import { Screen } from "../../shared/ui/Screen";
@@ -14,12 +21,24 @@ import { MealCard } from "../../features/diary/ui/MealCard";
 import { DiaryItemModal } from "../../features/diary/ui/DiaryItemModal";
 import { AddMealModal } from "../../features/diary/ui/AddMealModal";
 import { EditMealModal } from "../../features/diary/ui/EditMealModal";
+import { DateBar } from "../../features/diary/ui/DateBar";
+import { CalendarModal } from "../../features/diary/ui/CalendarModal";
 
 function todayISO(): string {
   const d = new Date();
   const yyyy = d.getFullYear();
   const mm = String(d.getMonth() + 1).padStart(2, "0");
   const dd = String(d.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+function addDays(dateISO: string, delta: number) {
+  const [y, m, d] = dateISO.split("-").map(Number);
+  const dt = new Date(y, m - 1, d);
+  dt.setDate(dt.getDate() + delta);
+  const yyyy = dt.getFullYear();
+  const mm = String(dt.getMonth() + 1).padStart(2, "0");
+  const dd = String(dt.getDate()).padStart(2, "0");
   return `${yyyy}-${mm}-${dd}`;
 }
 
@@ -74,6 +93,7 @@ export function DiaryScreen() {
     setEditMealId(mId);
     setEditMealOpen(true);
   };
+  const [calendarOpen, setCalendarOpen] = useState(false);
 
   const sortedProducts = useMemo(() => {
     return [...products].sort((a, b) => a.name.localeCompare(b.name, "ru"));
@@ -92,15 +112,21 @@ export function DiaryScreen() {
       </View>
 
       <View style={styles.calendarWrap}>
-        <Calendar
-          current={selectedDate}
-          onDayPress={(day) => setSelectedDate(day.dateString)}
-          markedDates={{
-            [selectedDate]: { selected: true, selectedColor: "#111111" },
+        <DateBar
+          dateISO={selectedDate}
+          onPrev={() => setSelectedDate(addDays(selectedDate, -1))}
+          onNext={() => setSelectedDate(addDays(selectedDate, 1))}
+          onOpenCalendar={() => setCalendarOpen(true)}
+        />
+
+        <CalendarModal
+          visible={calendarOpen}
+          selectedDate={selectedDate}
+          onClose={() => setCalendarOpen(false)}
+          onSelect={(dateISO) => {
+            setSelectedDate(dateISO);
+            setCalendarOpen(false);
           }}
-          hideExtraDays
-          enableSwipeMonths
-          firstDay={1}
         />
       </View>
 
@@ -108,7 +134,7 @@ export function DiaryScreen() {
         style={{ flex: 1, marginTop: spacing.lg }}
         contentContainerStyle={{
           gap: spacing.lg,
-          paddingBottom: spacing.xl, // чтобы низ не упирался в navbar
+          paddingBottom: spacing.xl, //чтобы низ не упирался в navbar
         }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
