@@ -1,12 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import type { DiaryState, Meal } from "../model/types";
 
-const KEY = "fku.diary.current.v2";
-const OLD_KEY = "fku.diary.current.v1";
-
-function makeId(prefix: string) {
-  return `${prefix}_${Date.now()}_${Math.random().toString(16).slice(2)}`;
-}
+const KEY_PREFIX = "fku.diary.day.v1";
 
 function defaultMeals(): Meal[] {
   return [
@@ -16,35 +11,25 @@ function defaultMeals(): Meal[] {
   ];
 }
 
-export async function loadDiary(): Promise<DiaryState> {
-  //новый формат
-  const raw = await AsyncStorage.getItem(KEY);
-  if (raw) {
-    try {
-      const parsed = JSON.parse(raw) as DiaryState;
-      if (Array.isArray(parsed?.meals)) return { meals: parsed.meals };
-    } catch {}
-  }
+function keyForDate(date: string) {
+  return `${KEY_PREFIX}.${date}`;
+}
 
-  //миграция со старого варианта
-  const oldRaw = await AsyncStorage.getItem(OLD_KEY);
-  if (oldRaw) {
-    try {
-      const old = JSON.parse(oldRaw) as any;
-      const meals = defaultMeals();
-      meals[0].items = Array.isArray(old?.breakfast) ? old.breakfast : [];
-      meals[1].items = Array.isArray(old?.lunch) ? old.lunch : [];
-      meals[2].items = Array.isArray(old?.dinner) ? old.dinner : [];
+export async function loadDiaryByDate(date: string): Promise<DiaryState> {
+  const raw = await AsyncStorage.getItem(keyForDate(date));
+  if (!raw) return { meals: defaultMeals() };
 
-      const migrated: DiaryState = { meals };
-      await AsyncStorage.setItem(KEY, JSON.stringify(migrated));
-      return migrated;
-    } catch {}
-  }
+  try {
+    const parsed = JSON.parse(raw) as DiaryState;
+    if (Array.isArray(parsed?.meals)) return { meals: parsed.meals };
+  } catch {}
 
   return { meals: defaultMeals() };
 }
 
-export async function saveDiary(state: DiaryState): Promise<void> {
-  await AsyncStorage.setItem(KEY, JSON.stringify(state));
+export async function saveDiaryByDate(
+  date: string,
+  state: DiaryState,
+): Promise<void> {
+  await AsyncStorage.setItem(keyForDate(date), JSON.stringify(state));
 }
