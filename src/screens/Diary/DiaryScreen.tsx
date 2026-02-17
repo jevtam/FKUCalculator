@@ -7,7 +7,6 @@ import {
   Text,
   View,
 } from "react-native";
-import { Calendar } from "react-native-calendars";
 
 import { Screen } from "../../shared/ui/Screen";
 import { colors, spacing, typography } from "../../shared/theme";
@@ -23,6 +22,14 @@ import { AddMealModal } from "../../features/diary/ui/AddMealModal";
 import { EditMealModal } from "../../features/diary/ui/EditMealModal";
 import { DateBar } from "../../features/diary/ui/DateBar";
 import { CalendarModal } from "../../features/diary/ui/CalendarModal";
+import { useSettings } from "../../features/settings/model/useSettings";
+import { CircularProgress } from "../../shared/ui/CircularProgress";
+import {
+  calcForGrams,
+  addNutrition,
+  roundProtein,
+  roundFa,
+} from "../../shared/lib/nutrition";
 
 function todayISO(): string {
   const d = new Date();
@@ -57,6 +64,39 @@ export function DiaryScreen() {
     updateItem,
     removeItem,
   } = useDiaryByDate(selectedDate);
+  const { state: settings } = useSettings();
+
+  const dayTotals = useMemo(() => {
+    return meals.reduce(
+      (acc, m) => {
+        for (const it of m.items) {
+          const p = byId.get(it.productId);
+          if (!p) continue;
+
+          const n = calcForGrams({
+            grams: it.grams,
+            proteinPer100g: p.proteinPer100g,
+            faPer100g: p.faPer100g,
+          });
+
+          acc = addNutrition(acc, n);
+        }
+        return acc;
+      },
+      { proteinG: 0, faMg: 0 },
+    );
+  }, [meals, byId]);
+
+  const limitMode = settings.limitMode;
+  const limitValue = settings.limitValue;
+
+  const dayValue =
+    limitMode === "fa"
+      ? roundFa(dayTotals.faMg)
+      : roundProtein(dayTotals.proteinG);
+
+  const label = limitMode === "fa" ? "ФА" : "НБ";
+  const unit = limitMode === "fa" ? "мг" : "г";
 
   const ready = productsReady && diaryReady;
 
@@ -64,10 +104,8 @@ export function DiaryScreen() {
   const [mealId, setMealId] = useState<MealId>("breakfast");
   const [editItem, setEditItem] = useState<DiaryItem | null>(null);
 
-  //добавить прием пищи
   const [mealModalOpen, setMealModalOpen] = useState(false);
 
-  //редактировать прием пищи
   const [editMealOpen, setEditMealOpen] = useState(false);
   const [editMealId, setEditMealId] = useState<MealId | null>(null);
 
@@ -102,13 +140,30 @@ export function DiaryScreen() {
   return (
     <Screen>
       <View style={styles.topRow}>
-        <Text style={styles.title}>Дневник</Text>
-        <Pressable
-          onPress={() => setMealModalOpen(true)}
-          style={styles.addMealBtn}
-        >
-          <Text style={styles.addMealBtnText}>+ Прием пищи</Text>
-        </Pressable>
+        <View style={{ gap: 4 }}>
+          <Text style={styles.title}>Дневник</Text>
+          <Text style={styles.limitText}>
+            {label}: {dayValue} / {limitValue > 0 ? limitValue : "—"} {unit}
+          </Text>
+        </View>
+
+        <View style={{ alignItems: "flex-end", gap: spacing.sm }}>
+          <CircularProgress
+            value={typeof dayValue === "number" ? dayValue : 0}
+            limit={limitValue}
+            label={label}
+            unit={unit}
+            size={64}
+            stroke={6}
+          />
+
+          <Pressable
+            onPress={() => setMealModalOpen(true)}
+            style={styles.addMealBtn}
+          >
+            <Text style={styles.addMealBtnText}>+ Прием пищи</Text>
+          </Pressable>
+        </View>
       </View>
 
       <View style={styles.calendarWrap}>
@@ -134,7 +189,7 @@ export function DiaryScreen() {
         style={{ flex: 1, marginTop: spacing.lg }}
         contentContainerStyle={{
           gap: spacing.lg,
-          paddingBottom: spacing.xl, //чтобы низ не упирался в navbar
+          paddingBottom: spacing.xl,
         }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
@@ -272,4 +327,9 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     backgroundColor: colors.bg,
   },
+  limitText: {
+  color: colors.muted,
+  fontSize: typography.small,
+  fontWeight: "700",
+},
 });

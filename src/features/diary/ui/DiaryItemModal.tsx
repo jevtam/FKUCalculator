@@ -23,7 +23,7 @@ type Props = {
 
   onClose: () => void;
   onSubmit: (productId: string, grams: number) => void;
-  onDelete?: () => void; //только для edit
+  onDelete?: () => void;
 };
 
 export function DiaryItemModal({

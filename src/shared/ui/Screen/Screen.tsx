@@ -1,11 +1,9 @@
 import React from "react";
+import { ScrollView, StyleSheet, View, type ViewStyle } from "react-native";
 import {
   SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  View,
-  ViewStyle,
-} from "react-native";
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import { colors, spacing } from "../../theme";
 
 type Props = {
@@ -15,19 +13,29 @@ type Props = {
 };
 
 export function Screen({ children, style, scroll = false }: Props) {
+  const insets = useSafeAreaInsets();
+
+  const base: ViewStyle = {
+    flex: 1,
+    backgroundColor: colors.bg,
+    paddingTop: insets.top + spacing.lg,
+    paddingBottom: spacing.lg,
+    paddingHorizontal: spacing.lg,
+  };
+
   return (
     <SafeAreaView style={styles.safe}>
       {scroll ? (
         <ScrollView
-          contentContainerStyle={[styles.scrollContent, style]}
+          contentContainerStyle={[base, styles.scrollExtra, style]}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
-          style={{ ...({ scrollbarWidth: "none" } as any) }}
+          style={styles.scrollView}
         >
           {children}
         </ScrollView>
       ) : (
-        <View style={[styles.container, style]}>{children}</View>
+        <View style={[base, style]}>{children}</View>
       )}
     </SafeAreaView>
   );
@@ -36,23 +44,19 @@ export function Screen({ children, style, scroll = false }: Props) {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.bg },
 
-  container: { flex: 1, padding: spacing.lg },
+  scrollView: { ...({ scrollbarWidth: "none" } as any) },
 
-  scrollContent: {
-    padding: spacing.lg,
+  scrollExtra: {
     paddingBottom: spacing.xl,
   },
 });
 
-//@ts-ignore
 if (
   typeof document !== "undefined" &&
   !document.getElementById("hide-scrollbars")
 ) {
   const style = document.createElement("style");
   style.id = "hide-scrollbars";
-  style.innerHTML = `
-    ::-webkit-scrollbar { display: none; }
-  `;
+  style.innerHTML = `::-webkit-scrollbar{display:none;}`;
   document.head.appendChild(style);
 }
