@@ -12,8 +12,6 @@ import { confirmDialog } from "../../shared/lib/confirm";
 type Tab = "products" | "dishes";
 
 export function CatalogScreen() {
-  const [tab, setTab] = useState<Tab>("products");
-
   const { isReady, items, add, update, remove } = useProducts();
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -21,36 +19,10 @@ export function CatalogScreen() {
 
   const modalMode = editItem ? "edit" : "create";
 
-  const title = useMemo(
-    () => (tab === "products" ? "Продукты" : "Блюда"),
-    [tab],
-  );
-
   return (
     <Screen scroll style={{ paddingBottom: spacing.md }}>
       <View style={styles.topRow}>
-        <View style={styles.tabs}>
-          <Pressable onPress={() => setTab("products")} style={styles.tabBtn}>
-            <Text
-              style={[
-                styles.tabText,
-                tab === "products" && styles.tabTextActive,
-              ]}
-            >
-              Продукты
-            </Text>
-            {tab === "products" && <View style={styles.underline} />}
-          </Pressable>
-
-          <Pressable onPress={() => setTab("dishes")} style={styles.tabBtn}>
-            <Text
-              style={[styles.tabText, tab === "dishes" && styles.tabTextActive]}
-            >
-              Блюда
-            </Text>
-            {tab === "dishes" && <View style={styles.underline} />}
-          </Pressable>
-        </View>
+        <Text style={styles.title}>Продукты</Text>
 
         <Pressable
           onPress={() => {
@@ -65,7 +37,7 @@ export function CatalogScreen() {
 
       {!isReady ? (
         <Text style={{ color: colors.muted }}>Загрузка…</Text>
-      ) : tab === "products" ? (
+      ) : (
         <ProductsList
           items={items}
           onEdit={(p) => {
@@ -73,12 +45,6 @@ export function CatalogScreen() {
             setModalOpen(true);
           }}
         />
-      ) : (
-        <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
-          <Text style={{ color: colors.muted }}>Блюда потом</Text>
-        </View>
       )}
 
       <ProductFormModal
@@ -119,12 +85,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: spacing.md,
   },
-  tabs: { flexDirection: "row", gap: spacing.lg },
-  tabBtn: { paddingVertical: spacing.xs },
-  tabText: { fontSize: typography.h2, color: colors.muted },
-  tabTextActive: { color: colors.text },
-  underline: { height: 2, backgroundColor: colors.text, marginTop: 6 },
-
   addBtn: {
     borderWidth: 1,
     borderColor: colors.border,
@@ -133,4 +93,5 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   addBtnText: { color: colors.text, fontWeight: "700" },
+  title: { fontSize: typography.h2, fontWeight: "800", color: colors.text },
 });

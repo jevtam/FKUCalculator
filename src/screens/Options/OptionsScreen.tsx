@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Alert,
   Pressable,
@@ -10,13 +10,17 @@ import {
 import { Screen } from "../../shared/ui/Screen";
 import { colors, spacing, typography } from "../../shared/theme";
 import { useSettings } from "../../features/settings/model/useSettings";
+import { useProducts } from "../../features/products/model/useProducts";
+import { ExportDiaryModal } from "../../features/diary/ui/ExportDiaryModal";
 
 export function OptionsScreen() {
   const { isReady, state, setLimitMode, setLimitValue } = useSettings();
+  const { isReady: productsReady, byId: productsById } = useProducts();
 
   const [draft, setDraft] = useState<string>("");
+  const [exportOpen, setExportOpen] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isReady) return;
     setDraft(state.limitValue ? String(state.limitValue) : "");
   }, [isReady, state.limitValue]);
@@ -75,6 +79,7 @@ export function OptionsScreen() {
         </View>
 
         <Text style={styles.label}>Лимит на день — {title}</Text>
+
         <View style={styles.inputRow}>
           <TextInput
             value={draft}
@@ -91,69 +96,118 @@ export function OptionsScreen() {
         </Pressable>
       </View>
 
+      {/* ===== ОПЕРАЦИИ С ДАННЫМИ ===== */}
       <View style={styles.card}>
         <Text style={styles.h2}>Операции с данными</Text>
-        <Text style={styles.muted}>
-          Импорт/экспорт добавим позже (кнопки будут тут).
-        </Text>
+
+        <Pressable onPress={() => setExportOpen(true)} style={styles.actionBtn}>
+          <Text style={styles.actionText}>Выгрузить дневник в PDF</Text>
+        </Pressable>
       </View>
+
+      <ExportDiaryModal
+        visible={exportOpen}
+        onClose={() => setExportOpen(false)}
+        productsById={productsById}
+        productsReady={productsReady}
+      />
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
   h1: {
-    fontSize: typography.h2,
+    fontSize: typography.h1,
     fontWeight: "800",
     color: colors.text,
     marginBottom: spacing.lg,
   },
+  h2: {
+    fontSize: typography.h2,
+    fontWeight: "700",
+    color: colors.text,
+    marginBottom: spacing.md,
+  },
   card: {
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 16,
+    borderRadius: 14,
     padding: spacing.lg,
-    gap: spacing.md,
     marginBottom: spacing.lg,
     backgroundColor: colors.bg,
   },
-  h2: { fontSize: typography.body, fontWeight: "800", color: colors.text },
-  muted: { color: colors.muted },
-
-  row: { flexDirection: "row", gap: spacing.sm },
+  row: {
+    flexDirection: "row",
+    gap: spacing.sm,
+    marginBottom: spacing.md,
+  },
   pill: {
     flex: 1,
+    paddingVertical: 10,
+    borderRadius: 10,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 12,
-    paddingVertical: 10,
     alignItems: "center",
   },
-  pillActive: { borderColor: colors.text },
-  pillText: { color: colors.muted, fontWeight: "700" },
-  pillTextActive: { color: colors.text },
-
-  label: { color: colors.muted, fontSize: typography.small },
-
-  inputRow: { flexDirection: "row", alignItems: "center", gap: spacing.sm },
+  pillActive: {
+    backgroundColor: colors.text,
+  },
+  pillText: {
+    color: colors.text,
+    fontWeight: "600",
+  },
+  pillTextActive: {
+    color: "#fff",
+  },
+  label: {
+    fontSize: typography.small,
+    color: colors.muted,
+    marginBottom: 6,
+  },
+  inputRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+  },
   input: {
     flex: 1,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 12,
+    borderRadius: 10,
     paddingHorizontal: spacing.md,
     paddingVertical: 10,
-    color: colors.text,
     fontSize: typography.body,
+    color: colors.text,
   },
-  unit: { color: colors.text, fontWeight: "800" },
-
+  unit: {
+    fontSize: typography.body,
+    color: colors.muted,
+  },
   saveBtn: {
+    marginTop: spacing.md,
     backgroundColor: colors.text,
-    borderRadius: 12,
     paddingVertical: 12,
+    borderRadius: 10,
     alignItems: "center",
-    marginTop: spacing.sm,
   },
-  saveText: { color: "#fff", fontWeight: "800" },
+  saveText: {
+    color: "#fff",
+    fontWeight: "700",
+  },
+  actionBtn: {
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 10,
+    paddingVertical: 12,
+    paddingHorizontal: spacing.md,
+    marginBottom: spacing.sm,
+  },
+  actionText: {
+    color: colors.text,
+    fontWeight: "700",
+  },
+  muted: {
+    color: colors.muted,
+    fontSize: typography.small,
+  },
 });
