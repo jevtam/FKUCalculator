@@ -106,11 +106,33 @@ export function ExportDiaryModal({
   };
 
   return (
-    <FullScreenModal visible={visible} onClose={onClose}>
+    <FullScreenModal
+      visible={visible}
+      onClose={onClose}
+      footer={
+        <View style={styles.actions}>
+          <Pressable onPress={onClose} style={[styles.btn, styles.btnGhost]}>
+            <Text style={styles.btnGhostText}>Отмена</Text>
+          </Pressable>
+
+          <Pressable
+            onPress={doExport}
+            disabled={!canExport || busy}
+            style={[
+              styles.btn,
+              styles.btnPrimary,
+              (!canExport || busy) && styles.btnDisabled,
+            ]}
+          >
+            <Text style={styles.btnPrimaryText}>
+              {busy ? "Готовим PDF..." : "Выгрузить PDF"}
+            </Text>
+          </Pressable>
+        </View>
+      }
+    >
       <Text style={styles.title}>Выгрузка дневника</Text>
-
       <Text style={styles.section}>Период</Text>
-
       <View style={styles.presetRow}>
         <Pressable onPress={() => setPreset(7)} style={styles.presetBtn}>
           <Text style={styles.presetText}>7 дней</Text>
@@ -122,9 +144,7 @@ export function ExportDiaryModal({
           <Text style={styles.presetText}>30 дней</Text>
         </Pressable>
       </View>
-
       <View style={{ height: spacing.md }} />
-
       <Text style={styles.label}>С даты</Text>
       <TextInput
         value={fromISO}
@@ -135,7 +155,6 @@ export function ExportDiaryModal({
         keyboardType="numbers-and-punctuation"
         style={styles.input}
       />
-
       <Text style={styles.label}>По дату</Text>
       <TextInput
         value={toISO}
@@ -146,33 +165,11 @@ export function ExportDiaryModal({
         keyboardType="numbers-and-punctuation"
         style={styles.input}
       />
-
-      <View style={styles.actions}>
-        <Pressable onPress={onClose} style={[styles.btn, styles.btnGhost]}>
-          <Text style={styles.btnGhostText}>Отмена</Text>
-        </Pressable>
-
-        <Pressable
-          onPress={doExport}
-          disabled={!canExport || busy}
-          style={[
-            styles.btn,
-            styles.btnPrimary,
-            (!canExport || busy) && styles.btnDisabled,
-          ]}
-        >
-          <Text style={styles.btnPrimaryText}>
-            {busy ? "Готовим PDF..." : "Выгрузить PDF"}
-          </Text>
-        </Pressable>
-      </View>
-
       {!productsReady && (
         <Text style={styles.warn}>
           Продукты еще загружаются - экспорт временно недоступен.
         </Text>
       )}
-
       {fromISO && toISO && fromISO > toISO && (
         <Text style={styles.warn}>Проверьте диапазон дат: «с» позже «по».</Text>
       )}

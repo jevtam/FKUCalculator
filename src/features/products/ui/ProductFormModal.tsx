@@ -46,6 +46,29 @@ export function ProductFormModal({
     <FullScreenModal
       visible={visible}
       onClose={onClose}
+      footer={
+        <View style={styles.actions}>
+          <Pressable onPress={onClose} style={[styles.btn, styles.btnGhost]}>
+            <Text style={styles.btnGhostText}>Отмена</Text>
+          </Pressable>
+
+          {mode === "edit" && (
+            <Pressable
+              onPress={onDelete}
+              style={[styles.btn, styles.btnDanger]}
+            >
+              <Text style={styles.btnDangerText}>Удалить</Text>
+            </Pressable>
+          )}
+
+          <Pressable
+            onPress={() => onSubmit(draft)}
+            style={[styles.btn, styles.btnPrimary]}
+          >
+            <Text style={styles.btnPrimaryText}>Сохранить</Text>
+          </Pressable>
+        </View>
+      }
     >
       <Text style={styles.title}>{title}</Text>
 
@@ -74,25 +97,6 @@ export function ProductFormModal({
         keyboardType="decimal-pad"
         style={styles.input}
       />
-
-      <View style={styles.actions}>
-        <Pressable onPress={onClose} style={[styles.btn, styles.btnGhost]}>
-          <Text style={styles.btnGhostText}>Отмена</Text>
-        </Pressable>
-
-        {mode === "edit" && (
-          <Pressable onPress={onDelete} style={[styles.btn, styles.btnDanger]}>
-            <Text style={styles.btnDangerText}>Удалить</Text>
-          </Pressable>
-        )}
-
-        <Pressable
-          onPress={() => onSubmit(draft)}
-          style={[styles.btn, styles.btnPrimary]}
-        >
-          <Text style={styles.btnPrimaryText}>Сохранить</Text>
-        </Pressable>
-      </View>
     </FullScreenModal>
   );
 }

@@ -27,6 +27,20 @@ export function AddMealModal({ visible, onClose, onSubmit }: Props) {
     <FullScreenModal
       visible={visible}
       onClose={onClose}
+      footer={
+        <View style={styles.actions}>
+          <Pressable onPress={onClose} style={[styles.btn, styles.btnGhost]}>
+            <Text style={styles.btnGhostText}>Отмена</Text>
+          </Pressable>
+
+          <Pressable
+            onPress={() => onSubmit(title)}
+            style={[styles.btn, styles.btnPrimary]}
+          >
+            <Text style={styles.btnPrimaryText}>Создать</Text>
+          </Pressable>
+        </View>
+      }
     >
       <Text style={styles.title}>Добавить прием пищи</Text>
 
@@ -37,19 +51,6 @@ export function AddMealModal({ visible, onClose, onSubmit }: Props) {
         placeholder="Например: Полдник"
         style={styles.input}
       />
-
-      <View style={styles.actions}>
-        <Pressable onPress={onClose} style={[styles.btn, styles.btnGhost]}>
-          <Text style={styles.btnGhostText}>Отмена</Text>
-        </Pressable>
-
-        <Pressable
-          onPress={() => onSubmit(title)}
-          style={[styles.btn, styles.btnPrimary]}
-        >
-          <Text style={styles.btnPrimaryText}>Создать</Text>
-        </Pressable>
-      </View>
     </FullScreenModal>
   );
 }

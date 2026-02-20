@@ -95,8 +95,8 @@ export function DiaryScreen() {
       ? roundFa(dayTotals.faMg)
       : roundProtein(dayTotals.proteinG);
 
-  const label = limitMode === "fa" ? "ФА" : "";
-  const unit = limitMode === "fa" ? "мг" : "";
+  const label = limitMode === "fa" ? "ФА" : "НБ";
+  const unit = limitMode === "fa" ? "мг" : "г";
 
   const ready = productsReady && diaryReady;
 
@@ -155,6 +155,7 @@ export function DiaryScreen() {
             unit={unit}
             size={64}
             stroke={6}
+            showMeta={false}
           />
 
           <Pressable

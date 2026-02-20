@@ -54,20 +54,23 @@ export function MealCard({
   return (
     <View style={styles.card}>
       <View style={styles.header}>
-        <View style={styles.headerLeft}>
+        <Pressable
+          style={({ pressed }) => [
+            styles.headerLeft,
+            pressed && canEditMeal ? { opacity: 0.6 } : null,
+          ]}
+          onLongPress={() => {
+            if (canEditMeal) onEditMeal();
+          }}
+          delayLongPress={350}
+        >
           <Text style={styles.title}>{title}</Text>
           <Text style={styles.total}>
             НБ {totalProtein} & ФА {totalFa}
           </Text>
-        </View>
+        </Pressable>
 
         <View style={{ flexDirection: "row", gap: spacing.sm }}>
-          {canEditMeal && (
-            <Pressable onPress={onEditMeal} style={styles.editBtn}>
-              <Text style={styles.editBtnText}>...</Text>
-            </Pressable>
-          )}
-
           <Pressable onPress={onAdd} style={styles.addBtn}>
             <Text style={styles.addBtnText}>+ Добавить</Text>
           </Pressable>

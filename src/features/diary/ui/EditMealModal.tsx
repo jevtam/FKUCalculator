@@ -38,6 +38,29 @@ export function EditMealModal({
     <FullScreenModal
       visible={visible}
       onClose={onClose}
+      footer={
+        <View style={styles.actions}>
+          <Pressable onPress={onClose} style={[styles.btn, styles.btnGhost]}>
+            <Text style={styles.btnGhostText}>Отмена</Text>
+          </Pressable>
+
+          {canDelete && (
+            <Pressable
+              onPress={() => onDelete?.()}
+              style={[styles.btn, styles.btnDanger]}
+            >
+              <Text style={styles.btnDangerText}>Удалить</Text>
+            </Pressable>
+          )}
+
+          <Pressable
+            onPress={() => onSave(title)}
+            style={[styles.btn, styles.btnPrimary]}
+          >
+            <Text style={styles.btnPrimaryText}>Сохранить</Text>
+          </Pressable>
+        </View>
+      }
     >
       <Text style={styles.title}>Редактировать прием пищи</Text>
 
@@ -48,28 +71,6 @@ export function EditMealModal({
         placeholder="Например: Полдник"
         style={styles.input}
       />
-
-      <View style={styles.actions}>
-        <Pressable onPress={onClose} style={[styles.btn, styles.btnGhost]}>
-          <Text style={styles.btnGhostText}>Отмена</Text>
-        </Pressable>
-
-        {canDelete && (
-          <Pressable
-            onPress={() => onDelete?.()}
-            style={[styles.btn, styles.btnDanger]}
-          >
-            <Text style={styles.btnDangerText}>Удалить</Text>
-          </Pressable>
-        )}
-
-        <Pressable
-          onPress={() => onSave(title)}
-          style={[styles.btn, styles.btnPrimary]}
-        >
-          <Text style={styles.btnPrimaryText}>Сохранить</Text>
-        </Pressable>
-      </View>
     </FullScreenModal>
   );
 }

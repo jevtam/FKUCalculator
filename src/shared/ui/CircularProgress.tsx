@@ -4,10 +4,13 @@ import Svg, { Circle } from "react-native-svg";
 import { colors, spacing, typography } from "../theme";
 
 type Props = {
-  value: number; 
-  limit: number; 
-  label: string;
-  unit: string; 
+  value: number;
+  limit: number;
+
+  label?: string;
+  unit?: string;
+  showMeta?: boolean;
+
   size?: number;
   stroke?: number;
 };
@@ -17,6 +20,7 @@ export function CircularProgress({
   limit,
   label,
   unit,
+  showMeta = true,
   size = 76,
   stroke = 6,
 }: Props) {
@@ -24,7 +28,6 @@ export function CircularProgress({
   const c = 2 * Math.PI * r;
 
   const progress = limit > 0 ? Math.max(0, Math.min(1, value / limit)) : 0;
-
   const dashOffset = c * (1 - progress);
 
   return (
@@ -55,9 +58,11 @@ export function CircularProgress({
       </Svg>
 
       <View style={styles.center}>
-        <Text style={styles.top}>{label}</Text>
+        {showMeta && label ? <Text style={styles.top}>{label}</Text> : null}
+
         <Text style={styles.main}>{limit > 0 ? formatNumber(limit) : "—"}</Text>
-        <Text style={styles.bottom}>{unit}</Text>
+
+        {showMeta && unit ? <Text style={styles.bottom}>{unit}</Text> : null}
       </View>
     </View>
   );
