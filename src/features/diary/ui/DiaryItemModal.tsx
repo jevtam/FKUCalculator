@@ -58,6 +58,29 @@ export function DiaryItemModal({
       visible={visible}
       onClose={onClose}
       scroll={false}
+      footer={
+        <View style={styles.actions}>
+          <Pressable onPress={onClose} style={[styles.btn, styles.btnGhost]}>
+            <Text style={styles.btnGhostText}>Отмена</Text>
+          </Pressable>
+
+          {mode === "edit" && (
+            <Pressable
+              onPress={() => onDelete?.()}
+              style={[styles.btn, styles.btnDanger]}
+            >
+              <Text style={styles.btnDangerText}>Удалить</Text>
+            </Pressable>
+          )}
+
+          <Pressable
+            onPress={() => onSubmit(productId, Number(grams.replace(",", ".")))}
+            style={[styles.btn, styles.btnPrimary]}
+          >
+            <Text style={styles.btnPrimaryText}>Сохранить</Text>
+          </Pressable>
+        </View>
+      }
     >
       <Text style={styles.title}>{title}</Text>
 
@@ -102,28 +125,6 @@ export function DiaryItemModal({
           }}
         />
       </View>
-
-      <View style={styles.actions}>
-        <Pressable onPress={onClose} style={[styles.btn, styles.btnGhost]}>
-          <Text style={styles.btnGhostText}>Отмена</Text>
-        </Pressable>
-
-        {mode === "edit" && (
-          <Pressable
-            onPress={() => onDelete?.()}
-            style={[styles.btn, styles.btnDanger]}
-          >
-            <Text style={styles.btnDangerText}>Удалить</Text>
-          </Pressable>
-        )}
-
-        <Pressable
-          onPress={() => onSubmit(productId, Number(grams.replace(",", ".")))}
-          style={[styles.btn, styles.btnPrimary]}
-        >
-          <Text style={styles.btnPrimaryText}>Сохранить</Text>
-        </Pressable>
-      </View>
     </FullScreenModal>
   );
 }
@@ -135,11 +136,8 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 16,
     gap: spacing.sm,
   },
-
   title: { fontSize: typography.h2, fontWeight: "700", color: colors.text },
-
   label: { fontSize: typography.small, color: colors.muted },
-
   selectedBox: {
     borderWidth: 1,
     borderColor: colors.border,
@@ -148,7 +146,6 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   selectedText: { color: colors.text },
-
   input: {
     borderWidth: 1,
     borderColor: colors.border,
@@ -165,6 +162,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     overflow: "hidden",
     height: 220,
+    flex: 1,
   },
   pickRow: {
     paddingVertical: 10,

@@ -81,7 +81,7 @@ export function ExportDiaryModal({
 
   const doExport = async () => {
     if (!productsReady) {
-      Alert.alert("Подождите", "Список продуктов ещё загружается.");
+      Alert.alert("Подождите", "Список продуктов еще загружается.");
       return;
     }
 
@@ -169,7 +169,7 @@ export function ExportDiaryModal({
 
       {!productsReady && (
         <Text style={styles.warn}>
-          Продукты ещё загружаются - экспорт временно недоступен.
+          Продукты еще загружаются - экспорт временно недоступен.
         </Text>
       )}
 

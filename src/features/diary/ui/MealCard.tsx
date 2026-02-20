@@ -78,7 +78,6 @@ export function MealCard({
         <Text style={styles.empty}>Пусто</Text>
       ) : (
         <View style={{ gap: spacing.sm }}>
-          {/*заголовок сетки*/}
           <View style={styles.gridHeader}>
             <Text style={styles.gridHeaderName}>Название</Text>
             <Text style={styles.gridHeaderCol}>НБ</Text>

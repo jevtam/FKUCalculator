@@ -28,7 +28,7 @@ export function AddMealModal({ visible, onClose, onSubmit }: Props) {
       visible={visible}
       onClose={onClose}
     >
-      <Text style={styles.title}>Добавить приём пищи</Text>
+      <Text style={styles.title}>Добавить прием пищи</Text>
 
       <Text style={styles.label}>Название</Text>
       <TextInput

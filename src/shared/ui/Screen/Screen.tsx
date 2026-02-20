@@ -1,9 +1,6 @@
 import React from "react";
 import { ScrollView, StyleSheet, View, type ViewStyle } from "react-native";
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { colors, spacing } from "../../theme";
 
 type Props = {
@@ -13,18 +10,16 @@ type Props = {
 };
 
 export function Screen({ children, style, scroll = false }: Props) {
-  const insets = useSafeAreaInsets();
-
   const base: ViewStyle = {
     flex: 1,
     backgroundColor: colors.bg,
-    paddingTop: insets.top + spacing.lg,
+    paddingTop: spacing.md,
     paddingBottom: spacing.lg,
     paddingHorizontal: spacing.lg,
   };
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView style={styles.safe} edges={["top", "left", "right"]}>
       {scroll ? (
         <ScrollView
           contentContainerStyle={[base, styles.scrollExtra, style]}
@@ -43,20 +38,6 @@ export function Screen({ children, style, scroll = false }: Props) {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.bg },
-
   scrollView: { ...({ scrollbarWidth: "none" } as any) },
-
-  scrollExtra: {
-    paddingBottom: spacing.xl,
-  },
+  scrollExtra: { paddingBottom: spacing.xl },
 });
-
-if (
-  typeof document !== "undefined" &&
-  !document.getElementById("hide-scrollbars")
-) {
-  const style = document.createElement("style");
-  style.id = "hide-scrollbars";
-  style.innerHTML = `::-webkit-scrollbar{display:none;}`;
-  document.head.appendChild(style);
-}

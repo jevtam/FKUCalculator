@@ -39,7 +39,7 @@ export function EditMealModal({
       visible={visible}
       onClose={onClose}
     >
-      <Text style={styles.title}>Редактировать приём пищи</Text>
+      <Text style={styles.title}>Редактировать прием пищи</Text>
 
       <Text style={styles.label}>Название</Text>
       <TextInput

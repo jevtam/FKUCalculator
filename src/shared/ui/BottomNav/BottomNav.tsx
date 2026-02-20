@@ -17,7 +17,7 @@ const items: Array<{ key: RouteKey; label: string; icon: any }> = [
 ];
 
 export function BottomNav({ active, onChange }: Props) {
-  const insets = useSafeAreaInsets(); // ✅ добавили
+  const insets = useSafeAreaInsets();
 
   return (
     <View style={[styles.wrap, { paddingBottom: insets.bottom + spacing.sm }]}>

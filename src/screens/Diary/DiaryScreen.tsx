@@ -95,8 +95,8 @@ export function DiaryScreen() {
       ? roundFa(dayTotals.faMg)
       : roundProtein(dayTotals.proteinG);
 
-  const label = limitMode === "fa" ? "ФА" : "НБ";
-  const unit = limitMode === "fa" ? "мг" : "г";
+  const label = limitMode === "fa" ? "ФА" : "";
+  const unit = limitMode === "fa" ? "мг" : "";
 
   const ready = productsReady && diaryReady;
 
@@ -143,7 +143,7 @@ export function DiaryScreen() {
         <View style={{ gap: 4 }}>
           <Text style={styles.title}>Дневник</Text>
           <Text style={styles.limitText}>
-            {label}: {dayValue} / {limitValue > 0 ? limitValue : "—"} {unit}
+            {label} {dayValue} / {limitValue > 0 ? limitValue : "—"} {unit}
           </Text>
         </View>
 
