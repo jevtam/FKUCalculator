@@ -96,7 +96,6 @@ export function OptionsScreen() {
         </Pressable>
       </View>
 
-      {/* ===== ОПЕРАЦИИ С ДАННЫМИ ===== */}
       <View style={styles.card}>
         <Text style={styles.h2}>Операции с данными</Text>
 

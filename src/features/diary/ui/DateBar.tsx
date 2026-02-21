@@ -3,10 +3,10 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { colors, spacing, typography } from "../../../shared/theme";
 
 type Props = {
-  dateISO: string; //YYYY-MM-DD
-  onPrev: () => void; //- день
-  onNext: () => void; //+ день
-  onOpenCalendar: () => void; //открытbt календарz
+  dateISO: string;
+  onPrev: () => void;
+  onNext: () => void;
+  onOpenCalendar: () => void;
 };
 
 function formatRu(dateISO: string) {

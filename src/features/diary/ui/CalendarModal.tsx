@@ -5,7 +5,7 @@ import { colors, spacing } from "../../../shared/theme";
 
 type Props = {
   visible: boolean;
-  selectedDate: string; //YYYY-MM-DD
+  selectedDate: string;
   onClose: () => void;
   onSelect: (dateISO: string) => void;
 };

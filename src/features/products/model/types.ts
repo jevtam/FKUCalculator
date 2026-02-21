@@ -12,6 +12,6 @@ export type Product = {
 
 export type ProductDraft = {
   name: string;
-  proteinPer100g: string;//строка для TextInput
+  proteinPer100g: string;
   faPer100g: string;
 };

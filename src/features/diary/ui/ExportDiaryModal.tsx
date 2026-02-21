@@ -29,7 +29,6 @@ function addDays(iso: string, delta: number): string {
   return `${yyyy}-${mm}-${dd}`;
 }
 function isValidISODate(s: string): boolean {
-  // YYYY-MM-DD
   if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
   const [y, m, d] = s.split("-").map(Number);
   if (!y || !m || !d) return false;
